@@ -1,0 +1,39 @@
+body,html{margin:0px; padding:0px;font-family:Arial;font-weight:400;font-size:12px;}
+table{font-family:Arial;font-weight:400;font-size:12px;}
+ .formtable {
+  width: 100%;
+  max-width: 100%;
+  margin-bottom: 5px;
+}
+ .formtable td,
+ .formtable th {
+   background-color: #fff !important;
+   padding: 3px;
+ }
+
+.btn{font-family:Arial;font-weight:400;font-size:12px;}
+
+form label.error {
+	color: red;
+	font-style: italic
+}
+div.error { display: none; }
+input {	border: 1px solid black; }
+input.checkbox { border: none }
+input:focus { border: 1px dotted black; }
+input.error { border: 1px dotted red; }
+
+.page{margin-bottom: 60px;}
+.p-wrap{width: 550px;height: 30px;margin: 0 auto;}
+.p-num{float: left;}
+.page .p-num a, .page .p-num b {float: left;height: 28px;line-height: 28px;padding: 0 19px;margin-right:20px;font-size: 14px;}
+.page .p-num a {color: #666666;border: 1px solid #e1e1e1;}
+.page .p-num a.curr {border: 1px solid #279127;padding: 0px 10px;background: 0 0;filter: none;color: #279127;cursor: default;}
+.page .p-num a.grayr{padding: 0px 10px;background: 0 0;}
+.page .p-num .pn-break {padding: 0px 10px;background: 0 0;}
+.page .p-num .pn-prev.disabled {background: 0 0;background: #fff;cursor: default;}
+
+
+.table-condensed > tbody > tr > td{
+  padding: 3px;
+}

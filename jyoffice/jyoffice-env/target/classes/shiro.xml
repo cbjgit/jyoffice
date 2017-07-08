@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		">
+
+	<!-- 自定义一个realm校验 -->
+	<bean id="gipsRealm" class="com.jyoffice.ca.GIPSRealm" />
+
+	<!-- 自定义一个form校验拦截器 -->
+	<bean id="formAuthenticationFilter" class="com.jyoffice.ca.JyFormAuthenticationFilter">
+		<property name="usernameParam" value="username" />
+		<property name="passwordParam" value="password" />
+		<property name="loginUrl" value="/loginsubmit.do" />
+		<property name="rememberMeParam" value="rememberMe" />
+	</bean>
+
+	<!-- rememberMeManager管理器 -->
+	<bean class="org.apache.shiro.web.mgt.CookieRememberMeManager" id="rememberMeManager">
+	</bean>
+	<bean class="com.jyoffice.ca.RedisShiroCacheManager" id="redisShiroCacheManager">
+	</bean>
+	<!-- securityManager管理器 -->
+	<bean class="org.apache.shiro.web.mgt.DefaultWebSecurityManager"
+		id="securityManager">
+		<property name="realm" ref="gipsRealm" />
+		<property name="cacheManager" ref="redisShiroCacheManager" />
+		<property name="rememberMeManager" ref="rememberMeManager" />
+	</bean>
+
+	<!-- 具体的 路径拦截器，登录验证路径在这里拦截 -->
+	<bean class="org.apache.shiro.spring.web.ShiroFilterFactoryBean"
+		id="shiroFilter">
+		<property name="securityManager" ref="securityManager" />
+		<property name="loginUrl" value="/login.jsp" />
+		<property name="successUrl" value="/backer/auth/homePage" />
+		<property name="unauthorizedUrl" value="/unauthorized.jsp"/>
+		<property name="filters">
+			<util:map>
+				<entry key="authc" value-ref="formAuthenticationFilter" />
+			</util:map>
+		</property>
+		<property name="filterChainDefinitions">
+			<value>
+				/index.jsp = anon
+				/unauthorized.jsp = anon
+				/login.jsp = authc 
+				/logout = logout
+				/** = user 
+			</value>
+		</property>
+	</bean>
+
+	<!-- 开启注解功能，验证失败， 其会抛出 UnauthorizedException异常， 此时可以使用 Spring的 ExceptionHandler处理 -->
+	<bean
+		class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+		<property name="securityManager" ref="securityManager">
+		</property>
+	</bean>
+
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean class="org.apache.shiro.spring.LifecycleBeanPostProcessor"
+		id="lifecycleBeanPostProcessor">
+
+	</bean>
+
+</beans>

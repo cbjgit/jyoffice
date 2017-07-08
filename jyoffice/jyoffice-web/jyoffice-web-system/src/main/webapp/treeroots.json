@@ -1,0 +1,3 @@
+[
+  { "id" : "0", "parent" : "#", "text" : "JYOffice办公系统","children" : true, "icon":"glyphicon glyphicon-home","state":{"selected":"true","opened":"true"} }
+]

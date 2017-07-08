@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/rabbit http://www.springframework.org/schema/rabbit/spring-rabbit-1.6.xsd">
+
+	<!-- 连接服务配置 -->
+	<rabbit:connection-factory id="connectionFactory"
+		username="chenbj" password="chenbj" host="127.0.0.1" port="5672" />
+
+	<rabbit:admin connection-factory="connectionFactory" />
+
+	<!-- queue 队列声明 -->
+	<rabbit:queue id="jyoffice.test.queue" name="jyoffice.test.queue"
+		durable="true" auto-delete="false" exclusive="false" />
+
+	<!-- exchange queue binging key 绑定 -->
+	<rabbit:direct-exchange id="jyoffice.test.exchange"
+		name="jyoffice.test.exchange">
+		<rabbit:bindings>
+			<rabbit:binding key="jyoffice.test.queue.key" queue="jyoffice.test.queue"></rabbit:binding>
+		</rabbit:bindings>
+	</rabbit:direct-exchange>
+
+	<!-- spring amqp默认的是jackson 的一个插件,目的将生产者生产的数据转换为json存入消息队列，由于fastjson的速度快于jackson,这里替换为fastjson的一个实现 -->
+	<bean id="jsonMessageConverter" class="com.jyoffice.rabit.FastJsonMessageConverter"></bean>
+
+	<!-- spring template声明 -->
+	<rabbit:template id="amqpTemplate" exchange="jyoffice.test.exchange"
+		connection-factory="connectionFactory" message-converter="jsonMessageConverter" />
+
+	<rabbit:listener-container
+		connection-factory="connectionFactory" acknowledge="auto">
+		<rabbit:listener queues="jyoffice.test.queue" ref="queueOneLitener" />
+	</rabbit:listener-container>
+
+</beans>

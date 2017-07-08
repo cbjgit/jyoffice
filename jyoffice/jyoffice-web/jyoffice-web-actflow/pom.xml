@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.jyoffice</groupId>
+		<artifactId>jyoffice-web</artifactId>
+		<version>0.0.1</version>
+	</parent>
+	<artifactId>jyoffice-web-actflow</artifactId>
+	<packaging>war</packaging>
+	<name>jyoffice-web-actflow Maven Webapp</name>
+	<url>http://maven.apache.org</url>
+	<dependencies>
+		<dependency>
+			<groupId>com.jyoffice</groupId>
+			<artifactId>jyoffice-service-actflow</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>jyactflow</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				
+				<version>2.2</version>
+				<configuration>
+					<port>9003</port>
+					<path>/jyactflow</path>
+					<uriEncoding>UTF-8</uriEncoding>
+					<server>tomcat7</server>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="jyoffice-web-form">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
+        <dependent-module archiveName="jyoffice-service-form-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jyoffice-service-form/jyoffice-service-form">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jyoffice-service-actflow-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jyoffice-service-actflow/jyoffice-service-actflow">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jyoffice-common-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jyoffice-common/jyoffice-common">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jyoffice-env-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jyoffice-env/jyoffice-env">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="jyoffice-redis-0.0.1.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/jyoffice-redis/jyoffice-redis">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/jyoffice-web-form/target/classes"/>
+        <property name="context-root" value="JYOffice.Form"/>
+    </wb-module>
+</project-modules>
