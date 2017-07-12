@@ -21,12 +21,12 @@ public class TestSgin {
 	
 	public static void proess(){
 		Map<String,String> actvar = new HashMap<String, String>();
-		//actvar.put("days", "2");
+		actvar.put("days", "5");
 		
 		TreeMap<String, Object> map = new TreeMap<String, Object>();
-		map.put("instaceId", "107505");
-		/*map.put("actvar",actvar);*/
-		//map.put("userId","wocao");
+		map.put("taskId", "150005");
+		//map.put("actvar",actvar);
+		//map.put("userId","zhangsi");
 		/*
 		map.put("appUserId","chenbj");
 		map.put("appUserName","陈柏贱");

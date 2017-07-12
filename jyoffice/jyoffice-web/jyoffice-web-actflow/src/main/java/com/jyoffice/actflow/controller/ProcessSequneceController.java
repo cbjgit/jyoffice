@@ -60,11 +60,14 @@ public class ProcessSequneceController extends BaseController {
 	@RequestMapping("/list/{processId}")
 	public String list(HttpServletRequest request, Model model, @PathVariable String processId) {
 
+		ActDefProcess actProcess = actProcessService.get(Integer.parseInt(processId));
+		
 		Pager<Map<String, Object>> pager =RequestUtil.getPager(request);
 		pager.getParam().put("processId", processId);
 		actSequenceService.getPager(pager);
 		model.addAttribute("pager", pager);
 		model.addAttribute("processId", processId);
+		model.addAttribute("actProcess", actProcess);
 		return "process/seqlist";
 	}
 

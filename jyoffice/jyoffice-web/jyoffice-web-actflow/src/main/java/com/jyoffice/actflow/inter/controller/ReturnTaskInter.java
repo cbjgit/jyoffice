@@ -1,8 +1,6 @@
 package com.jyoffice.actflow.inter.controller;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,11 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.jyoffice.actflow.exception.ActFlowException;
 import com.jyoffice.actflow.inter.request.ReturnTaskRequest;
-import com.jyoffice.actflow.inter.request.SubmitTaskRequest;
 import com.jyoffice.actflow.inter.response.BaseResponse;
-import com.jyoffice.actflow.inter.response.SubmitTaskResponse;
-import com.jyoffice.actflow.model.ActDefNode;
-import com.jyoffice.actflow.model.ActInstanceExt;
+import com.jyoffice.actflow.inter.response.ReturnTaskResponse;
 import com.jyoffice.actflow.service.ActEngineService;
 import com.jyoffice.actflow.service.ActFlowControlService;
 import com.jyoffice.actflow.service.ActProcessService;
@@ -61,23 +56,26 @@ public class ReturnTaskInter extends BaseInter {
 					return BaseResponse.errResponse("任务不存在", "请传递正确的TaskId");
 				}
 				
-				ActInstanceExt instance = interService.getByInstanceId(task.getProcessInstanceId());
-				//获取上一环节
-				ActDefNode node = actFlowControlService.getUpNode(instance.getProcessId(), task.getTaskDefinitionKey());
-				if(node == null){
-					return BaseResponse.errResponse("未找到上一环节", "请检查流程配置是否正确");
+				ReturnTaskResponse rtResponse = new ReturnTaskResponse();
+				List<Task> taskList = actFlowControlService.jumpCompleteTask(task,spRequest.getDestTaskKey());
+				List<ReturnTaskResponse.RspTask> tList = new ArrayList<ReturnTaskResponse.RspTask>();
+				for(Task t : taskList){
+					ReturnTaskResponse.RspTask rsptask = rtResponse.new RspTask();
+					rsptask.setTaskId(t.getId());
+					rsptask.setTaskKey(t.getTaskDefinitionKey());
+					rsptask.setTaskName(t.getName());
+					tList.add(rsptask);
 				}
+				rtResponse.setTask(tList);
+				rtResponse.setSuccess(true);
+				return rtResponse;
 				
-				actEngineService.complete(task.getId(), node.getNodeId());
-				SubmitTaskResponse stResponse = new SubmitTaskResponse();
-				
-				stResponse.setSuccess(true);
-				return stResponse;
-				
+			}catch(ActFlowException e){
+				log.error("任务完成错误:", e);
+				return BaseResponse.errResponse(e.getMessage(),e.getMessage());
 			}catch(Exception e){
 				log.error("任务完成错误:", e);
 				return BaseResponse.errResponse(e.getMessage(),"请联系管理员解决");
-				
 			}
 		}else{
 			log.info("验签失败");
@@ -85,31 +83,11 @@ public class ReturnTaskInter extends BaseInter {
 		}
 	}
 
-	private void completeTask(SubmitTaskRequest spRequest,SubmitTaskResponse stResponse,Task task,ActDefNode node) throws Exception{
-		
-		Object obj = spRequest.getActvar();
-		Map<String, Object> actvar = (Map<String, Object>)obj;
-		if(actvar == null)
-			actvar = new HashMap<String, Object>();
-		
-		List<Task> list = actFlowControlService.completeTask(task,spRequest.getUserId(),node,actvar);
-		stResponse.setSubmit(true);
-		
-		List<SubmitTaskResponse.RspTask> tList = new ArrayList<SubmitTaskResponse.RspTask>();
-		for(Task t : list){
-			SubmitTaskResponse.RspTask rsptask = stResponse.new RspTask();
-			rsptask.setTaskId(t.getId());
-			rsptask.setTaskKey(t.getTaskDefinitionKey());
-			rsptask.setTaskName(t.getName());
-			tList.add(rsptask);
-		}
-		stResponse.setTask(tList);
-	}
-	
 	private TreeMap<String, Object> toMap(ReturnTaskRequest rtRequest) {
 		
 		TreeMap<String, Object> map = new TreeMap<String, Object>();
 		map.put("taskId", rtRequest.getTaskId());
+		map.put("destTaskKey", rtRequest.getDestTaskKey());
 		map.put("timestamp", rtRequest.getTimestamp());
 		return map;
 	}

@@ -145,6 +145,26 @@ public class ProcessController extends BaseController {
 	}
 
 	/**
+	 * 复制流程
+	 * 
+	 * @param request
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping("/copy/{id}")
+	public String copy(RedirectAttributes redirect, @PathVariable Integer id) {
+
+		ActDefProcess process = actProcessService.get(id);
+		if (process != null) {
+			actProcessService.copyProcess(process);
+			addMessage(redirect, "复制流程成功");
+		} else {
+			addMessage(redirect, "流程不存在");
+		}
+		return "redirect:/process/definition/list";
+	}
+	
+	/**
 	 * 流程树
 	 * 
 	 * @param request

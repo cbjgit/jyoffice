@@ -52,11 +52,14 @@ public class ProcessNodeController extends BaseController {
 	@RequestMapping("/list/{processId}")
 	public String list(HttpServletRequest request, Model model, @PathVariable String processId) {
 
+		ActDefProcess actProcess = actProcessService.get(Integer.parseInt(processId));
+		
 		Pager<ActDefNode> pager = RequestUtil.getPager(request);
 		pager.getParam().put("processId", processId);
 		actNodeService.getPager(pager);
 		model.addAttribute("pager", pager);
 		model.addAttribute("processId", processId);
+		model.addAttribute("actProcess", actProcess);
 		return "process/nodelist";
 	}
 

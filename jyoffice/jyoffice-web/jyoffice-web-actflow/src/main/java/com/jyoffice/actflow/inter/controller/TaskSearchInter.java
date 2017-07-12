@@ -56,4 +56,35 @@ public class TaskSearchInter extends BaseInter {
 			return BaseResponse.errResponse(e.getMessage(), "系统出错请联系管理员");
 		}
 	}
+	
+	@RequestMapping(value = "/hist/{userId}/{processKey}/{periodStart}/{periodend}", method = RequestMethod.GET)
+	public @ResponseBody BaseResponse histtask(HttpServletRequest request, @PathVariable String userId,
+			@PathVariable String processKey, @PathVariable long periodStart, @PathVariable long periodend) {
+
+		try {
+			processKey = "-".equals(processKey) ? "" : processKey;
+			List<Map> taskList = actEngineService.getHiTaskList(userId, processKey, periodStart,
+					periodend);
+			List<TaskSearchResponse.RspTask> responseList = new ArrayList<TaskSearchResponse.RspTask>();
+			TaskSearchResponse response = new TaskSearchResponse();
+			response.setSuccess(true);
+
+			for (Map task : taskList) {
+				TaskSearchResponse.RspTask rspTask = response.new RspTask();
+				rspTask.setTaskId(String.valueOf(task.get("id")));
+				rspTask.setBusKey(String.valueOf(task.get("busKey")));
+				rspTask.setTaskName(String.valueOf(task.get("name")));
+				rspTask.setTaskKey(String.valueOf(task.get("taskDefKey")));
+				rspTask.setUrl(String.valueOf(task.get("taskUrl")));
+				responseList.add(rspTask);
+			}
+			response.setTask(responseList);
+
+			return response;
+
+		} catch (Exception e) {
+			log.info("", e);
+			return BaseResponse.errResponse(e.getMessage(), "系统出错请联系管理员");
+		}
+	}
 }

@@ -2,6 +2,7 @@ package com.jyoffice.actflow.controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,6 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.activiti.bpmn.model.BpmnModel;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.beetl.core.engine.NodeEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.jyoffice.actflow.bpmn.DynamicProcess;
+import com.jyoffice.actflow.bpmn.NodeType;
 import com.jyoffice.actflow.model.ActDefNode;
 import com.jyoffice.actflow.model.ActDefProcess;
 import com.jyoffice.actflow.model.ActDefSequence;
@@ -101,6 +104,42 @@ public class DeployeeController extends BaseController{
 		return "redirect:/process/definition/list";
 	}
 
+	private List<ActDefSequence> getRtnSeqList(List<ActDefNode> nodeList){
+		List<ActDefSequence> seqList = new ArrayList<ActDefSequence>();
+		int i = 0;
+		for (ActDefNode node : nodeList) {
+			if(node.getBack().intValue() == 1 && NodeType.TYPE_USERTASK.equals(node.getNodeTypes())){
+				
+				ActDefSequence rtnseq = new ActDefSequence();
+				rtnseq.setId(i++);
+				rtnseq.setConditionExpression("${_taskoper == 2}");
+				rtnseq.setNodeId(node.getNodeId());
+				rtnseq.setToNodeId("ag01");
+				
+				String toNodeId = getNodeId(node.getProcessId(), node.getNodeId());
+				
+				
+				seqList.add(rtnseq);
+				
+			}
+		}
+		return seqList;
+	}
+	
+	private String getNodeId(int processId,String nodeId){
+		
+		ActDefNode node = actNodeService.getActNode(nodeId, processId);
+		if(NodeType.TYPE_USERTASK.equals(node.getNodeTypes())){
+			List<ActDefSequence> list = actSequenceService.getListByNodeId(processId,nodeId);
+			ActDefSequence seq = list.get(0);
+			node = actNodeService.getActNode(nodeId, processId);
+			if(NodeType.TYPE_EXCLUSIVE_GATEWAY.equals(node.getNodeTypes())){
+				return node.getNodeId();
+			}
+		}
+		return null;
+	}
+	
 	@RequestMapping("/xml/{id}")
 	public void xml(HttpServletResponse response, Model model,@PathVariable Integer id) {
 		
