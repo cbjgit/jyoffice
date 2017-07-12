@@ -162,7 +162,41 @@ public class ActFlowControlService {
 		if(assignee != null && assignee.length() > 0)
 			setAssignee(actvar, node, assignee);
 		
+		actvar.put("_taskoper", 1);
 		actEngineService.completeTask(task.getId(), actvar);
+		
+		return actEngineService.getCurrentTask(task.getProcessInstanceId());
+	}
+	
+	/**
+	 * 回退任务
+	 * 
+	 * @param frmInstanceId
+	 * @param taskKey
+	 * @param taskId
+	 * @param data
+	 */
+	public List<Task> jumpCompleteTask(Task task,String destTask) throws ActFlowException{
+		
+		if(destTask == null || destTask.length() == 0){
+			//获取上一步环节
+			destTask = actEngineService.getUpTaskKey(task);
+		}else{
+			//检查任务节点是否已处理过
+			List<String> list = actEngineService.getUpTaskKeyAll(task);
+			boolean flag = false;
+			for(String taskKey : list){
+				if(taskKey.equals(destTask)){
+					flag = true;
+				}
+			}
+			if(!flag){
+				throw new ActFlowException("当前流程从未处理过任务【"+destTask+"】,不能退回");
+			}
+		}
+		Map<String,Object> actvar = new HashMap<String, Object>();
+		actvar.put("_taskoper", 2);
+		actEngineService.completeTask(task.getId(),destTask, actvar);
 		
 		return actEngineService.getCurrentTask(task.getProcessInstanceId());
 	}
@@ -192,28 +226,6 @@ public class ActFlowControlService {
 				}
 			} else {
 				return getNextNode(processId, seq.getToNodeId(), varMap);
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * 获取上一个环节
-	 * 
-	 * @param processId
-	 * @param taskKey
-	 * @return
-	 */
-	public ActDefNode getUpNode(int processId, String taskKey) {
-		List<ActDefSequence> seqList = actSequenceService.getListByToNodeId(processId, taskKey);
-		for (ActDefSequence seq : seqList) {
-			
-			ActDefNode entity = actNodeService.getActNode(seq.getNodeId(), processId);
-
-			if (NodeType.TYPE_USERTASK.equals(entity.getNodeTypes())) {
-				return entity;
-			} else {
-				return getUpNode(processId, seq.getNodeId());
 			}
 		}
 		return null;

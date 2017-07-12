@@ -1,6 +1,7 @@
 package com.jyoffice.actflow.service;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,5 +50,18 @@ public class ActProcessService extends BaseService<ActDefProcess, Integer> {
 		return super.getList("ActDefProcess.list", ActDefProcess.class, null);
 	}
 	
+	public void copyProcess(ActDefProcess process){
+		ActDefProcess copyprocess = new ActDefProcess();
+		copyprocess.setDescption(process.getDescption());
+		copyprocess.setCreateDate(new Date());
+		copyprocess.setUpdateDate(new Date());
+		copyprocess.setProcessKey(process.getProcessKey());
+		copyprocess.setProcessName(process.getProcessName());
+		copyprocess.setStatus(0);
+		long key = this.insertKey(copyprocess);
+		
+		actNodeService.copyNode(process.getId(), key);
+		actSequenceService.copySequence(process.getId(), key);
+	}
 	
 }

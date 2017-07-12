@@ -1,11 +1,14 @@
 package com.jyoffice.actflow.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.activiti.bpmn.model.BpmnModel;
+import org.activiti.bpmn.model.FlowNode;
+import org.activiti.bpmn.model.SequenceFlow;
 import org.activiti.engine.ProcessEngine;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -234,7 +237,91 @@ public class ActEngineService {
 		
 	}
 	
-	public void complete(String taskId,String destTask) {
-		taskService.complete(taskId, destTask);
+	public List<Map> getHiTaskList(String userId,String processKey,long periodStart,long periodend) {
+		
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("userId", userId);
+		param.put("processKey", processKey);
+		if(periodStart > 0){
+			param.put("createTimeStart", new Date(periodStart));
+		}
+		if(periodend > 0){
+			param.put("createTimeEnd",  new Date(periodend));
+		}
+		return sqlManager.select("ActHiTask.list", Map.class, param);
+		
+	}
+	
+	public String getUpTaskKey(Task task) {
+		
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("taskDefKey", task.getTaskDefinitionKey());
+		param.put("instanceId", task.getProcessInstanceId());
+		return sqlManager.selectSingle("ActHiTask.getUpTaskKey", param, String.class);
+		
+	}
+	
+	public List<String> getUpTaskKeyAll(Task task) {
+		
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("taskDefKey", task.getTaskDefinitionKey());
+		param.put("instanceId", task.getProcessInstanceId());
+		return sqlManager.select("ActHiTask.getUpTaskKeyAll", String.class, param);
+		
+	}
+
+	public void completeTask(String taskId,String destTask, Map<String, Object> var) {
+
+		Task task = getTask(taskId);
+		BpmnModel bpmnModel = getBpmnModel(task.getProcessDefinitionId());
+		
+		org.activiti.bpmn.model.Process process = bpmnModel.getProcesses().get(0);
+		FlowNode sourceFlownode = (FlowNode)process.getFlowElement(task.getTaskDefinitionKey(), true);
+		
+		FlowNode destFlownode = (FlowNode)process.getFlowElement(destTask, true);
+		
+		// 清空原有流向
+		List<SequenceFlow> oriSequenceFlowList = clearSequenceFlow(sourceFlownode);
+
+		// 新建流向
+		SequenceFlow newSequenceFlow = new SequenceFlow(task.getTaskDefinitionKey(),destTask);
+		newSequenceFlow.setSourceFlowElement(sourceFlownode);
+		newSequenceFlow.setTargetFlowElement(destFlownode);
+		
+		List<SequenceFlow> outgoingFlows = new ArrayList<SequenceFlow>();
+		outgoingFlows.add(newSequenceFlow);
+		sourceFlownode.setOutgoingFlows(outgoingFlows);
+		
+		taskService.complete(taskId,var);
+		
+		// 删除目标节点新流入
+		destFlownode.getIncomingFlows().remove(newSequenceFlow);
+		// 还原以前流向
+		restoreSequenceFlow(sourceFlownode, oriSequenceFlowList);
+		
+	}
+	
+	private List<SequenceFlow> clearSequenceFlow(FlowNode flowNode) {
+
+		// 存储当前节点所有流向临时变量 
+		List<SequenceFlow> oriSequenceFlowList = new ArrayList<SequenceFlow>();
+		// 获取当前节点所有流向，存储到临时变量，然后清空 
+		List<SequenceFlow> pvmTransitionList = flowNode.getOutgoingFlows();
+		for (SequenceFlow seqflow : pvmTransitionList) {
+			oriSequenceFlowList.add(seqflow);
+		}
+		pvmTransitionList.clear();
+		return oriSequenceFlowList;
+	}
+
+	private void restoreSequenceFlow(FlowNode flowNode,
+			List<SequenceFlow> oriSequenceFlowList) {
+		// 清空现有流向 
+		List<SequenceFlow> pvmTransitionList = flowNode.getOutgoingFlows();
+		pvmTransitionList.clear();
+		// 还原以前流向 
+		for (SequenceFlow seqflow : oriSequenceFlowList) {
+			pvmTransitionList.add(seqflow);
+		}
 	}
 }

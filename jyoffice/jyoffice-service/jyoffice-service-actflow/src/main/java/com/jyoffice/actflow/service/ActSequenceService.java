@@ -56,4 +56,12 @@ public class ActSequenceService extends BaseService<ActDefSequence, Integer> {
 	public List<ActDefSequence> getList(Map<String, Object> param){
 		return super.sqlManager.select("ActDefSequence.list", ActDefSequence.class, param);
 	}
+	
+	
+	public void copySequence(int processId,long newProcessId){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("processId", processId);
+		param.put("newProcessId", newProcessId);
+		super.sqlManager.update("ActDefSequence.copySequence", param);
+	}
 }

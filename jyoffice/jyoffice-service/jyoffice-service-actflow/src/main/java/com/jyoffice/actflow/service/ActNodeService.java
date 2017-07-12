@@ -54,4 +54,11 @@ public class ActNodeService extends BaseService<ActDefNode, Integer> {
 	public List<ActDefNode> getNodeList(Map<String, Object> param){
 		return super.getList("ActDefNode.list", ActDefNode.class, param);
 	}
+	
+	public void copyNode(int processId,long newProcessId){
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("processId", processId);
+		param.put("newProcessId", newProcessId);
+		super.sqlManager.update("ActDefNode.copyNode", param);
+	}
 }
