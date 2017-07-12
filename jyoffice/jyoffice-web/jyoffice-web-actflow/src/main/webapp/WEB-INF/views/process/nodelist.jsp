@@ -6,7 +6,9 @@
 </head>
 <body>
 	<div>
+		<c:if test="${empty actProcess.definitionId}">
 		<a href="javascript:void(0);" key="0" class="btn btn-default myeditoperator" role="button">新增环节</a>
+		</c:if>
 		<span>${message}</span>
 	</div>
 	<p></p>
@@ -59,8 +61,10 @@
 				</td>
 				<td>${pl.assgnee}</td>
 				<td>
+					<c:if test="${empty actProcess.definitionId}">
 					<a href="javascript:void(0);" key="${pl.id}" class="btn btn-default myeditoperator" role="button">编辑</a>
 					<a href="javascript:void(0);" key="${pl.id}" class="btn btn-default mydelete" role="button">删除</a>
+					</c:if>
 					<a href="javascript:void(0);" key="${pl.id}" class="btn btn-default myviewoperator" role="button">查看</a>
 				</td>
 			</tr>

@@ -38,6 +38,13 @@
 				<td>${pl.createBy}</td>
 				<td><fmt:formatDate value="${pl.createDate}" pattern="yyyy-MM-dd HH:mm:ss"/></td>
 				<td>
+					<a href="${context}/process/deployee/diagram/${pl.id}" target="_blank" class="btn btn-default">流程图</a>
+					<a href="${context}/process/deployee/xml/${pl.id}" target="_blank" class="btn btn-default">流程XML</a>
+					<a href="${context}/process/definition/copy/${pl.id}" class="btn btn-default">复制</a>
+					<c:if test="${empty pl.deployId}">
+					<a href="${context}/process/deployee/deploy/${pl.id}" class="btn btn-default">部署</a>
+					</c:if>
+					
 					<c:if test="${pl.status == 0 or pl.status == -1}">
 					<a href="javascript:void(0);" key="${pl.id}" class="btn btn-default myeditoperator" role="button">编辑</a>
 					<a href="javascript:void(0);" key="${pl.id}" class="btn btn-default mydelete" role="button">删除</a>
@@ -46,11 +53,7 @@
 					<c:if test="${pl.status == 1}">
 					<a href="${context}/process/definition/disenabled/${pl.id}/0" class="btn btn-default">停用</a>
 					</c:if>
-					<c:if test="${empty pl.deployId}">
-					<a href="${context}/process/deployee/deploy/${pl.id}" class="btn btn-default">部署</a>
-					</c:if>
-					<a href="${context}/process/deployee/diagram/${pl.id}" target="_blank" class="btn btn-default">流程图</a>
-					<a href="${context}/process/deployee/xml/${pl.id}" target="_blank" class="btn btn-default">流程XML</a>
+					
 				</td>
 			</tr>
 		</c:forEach>
