@@ -14,8 +14,8 @@ colslist
 ===
 
 	id,node_id,to_node_id,condition_expression,process_id,
-	(select node_names from act_def_node b where b.node_id = a.node_id)node_name,
-	(select node_names from act_def_node b where b.node_id = a.to_node_id)tonode_name
+	(select node_names from act_def_node b where b.node_id = a.node_id and b.process_id = a.process_id)node_name,
+	(select node_names from act_def_node b where b.node_id = a.to_node_id and b.process_id = a.process_id)tonode_name
 
 cols
 ===
@@ -36,3 +36,10 @@ condition
 	 and `to_node_id`=#toNodeId#
 	@}
 	
+copySequence
+===
+	insert into act_def_sequence
+		(node_id,to_node_id,condition_expression,process_id)
+	select 
+		node_id,to_node_id,condition_expression,#newProcessId# 
+	from act_def_sequence where process_id=#processId#

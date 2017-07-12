@@ -30,3 +30,13 @@ condition
 	 and `node_types`=#nodeTypes#
 	@}
 	
+	
+copyNode
+===
+	insert into act_def_node
+		(node_id,node_names,node_types,multi,multi_type,assignee_type,
+		assgnee,recall,back,completion_condition,process_id,rate,scope,scope_type,task_url,hitask_url)
+	select 
+		node_id,node_names,node_types,multi,multi_type,assignee_type,
+		assgnee,recall,back,completion_condition,#newProcessId#,rate,scope,scope_type,task_url,hitask_url 
+	from act_def_node where process_id=#processId#
