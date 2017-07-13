@@ -112,7 +112,11 @@ public class SubmitTaskInter extends BaseInter {
 		if(actvar == null)
 			actvar = new HashMap<String, Object>();
 		
-		List<Task> list = actFlowControlService.completeTask(task,spRequest.getUserId(),node,actvar);
+		String assignee = spRequest.getUserId();
+		if(node != null && node.getAssigneeType().intValue() == 1){
+			assignee = node.getAssgnee();
+		}
+		List<Task> list = actFlowControlService.completeTask(task,assignee,node,actvar);
 		stResponse.setSubmit(true);
 		
 		List<SubmitTaskResponse.RspTask> tList = new ArrayList<SubmitTaskResponse.RspTask>();

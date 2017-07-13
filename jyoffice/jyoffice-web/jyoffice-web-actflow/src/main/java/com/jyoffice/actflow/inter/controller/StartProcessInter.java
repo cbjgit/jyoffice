@@ -2,6 +2,7 @@ package com.jyoffice.actflow.inter.controller;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
+
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -9,12 +10,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import com.jyoffice.actflow.exception.ActFlowException;
 import com.jyoffice.actflow.inter.request.StartProcessRequest;
 import com.jyoffice.actflow.inter.response.BaseResponse;
 import com.jyoffice.actflow.inter.response.StartProcessResponse;
 import com.jyoffice.actflow.model.ActDefProcess;
 import com.jyoffice.actflow.model.ActInstanceExt;
+import com.jyoffice.actflow.service.ActFlowControlService;
 import com.jyoffice.actflow.service.ActProcessService;
 import com.jyoffice.actflow.service.InterService;
 import com.jyoffice.util.StringUtil;
@@ -26,7 +29,7 @@ public class StartProcessInter extends BaseInter {
 	@Autowired
 	ActProcessService actProcessService;
 	@Autowired
-	InterService interService;
+	ActFlowControlService actFlowControlService;
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody BaseResponse start(HttpServletRequest request,
@@ -56,7 +59,7 @@ public class StartProcessInter extends BaseInter {
 				instance.setProcessId(process.getId());
 				instance.setProcessKey(process.getProcessKey());
 				
-				Task task = interService.startProcess(process, instance);
+				Task task = actFlowControlService.startProcess(process, instance);
 				
 				//返回
 				StartProcessResponse srResponse = new StartProcessResponse();
