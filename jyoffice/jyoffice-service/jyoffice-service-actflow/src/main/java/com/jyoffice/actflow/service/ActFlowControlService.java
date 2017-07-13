@@ -19,6 +19,7 @@ import com.jyoffice.actflow.exception.ActFlowException;
 import com.jyoffice.actflow.model.ActDefNode;
 import com.jyoffice.actflow.model.ActDefProcess;
 import com.jyoffice.actflow.model.ActDefSequence;
+import com.jyoffice.actflow.model.ActInstanceExt;
 import com.jyoffice.ca.SessionUtil;
 import com.jyoffice.util.ElExpressionUtil;
 import com.jyoffice.util.SpringContextHolder;
@@ -34,6 +35,8 @@ public class ActFlowControlService {
 	ActNodeService actNodeService;
 	@Autowired
 	ActSequenceService actSequenceService;
+	@Autowired
+	InterService interService;
 	
 	/**
 	 * 提交任务
@@ -148,6 +151,21 @@ public class ActFlowControlService {
 		return taskInfo;
 	}
 	
+	/**
+	 * 启动流程
+	 * 
+	 * @param frmInstanceId
+	 * @param taskKey
+	 * @param taskId
+	 * @param data
+	 */
+	public Task startProcess(ActDefProcess process,ActInstanceExt instance) throws Exception{
+		
+		Task task = startProcess(process, instance.getAppUserid(), instance.getBusKey());
+		instance.setInstanceId(task.getProcessInstanceId());
+		interService.insert(instance);
+		return task;
+	}
 	
 	/**
 	 * 完成任务
@@ -178,6 +196,12 @@ public class ActFlowControlService {
 	 */
 	public List<Task> jumpCompleteTask(Task task,String destTask) throws ActFlowException{
 		
+		ActInstanceExt insext = interService.getByInstanceId(task.getProcessInstanceId());
+		ActDefNode node = actNodeService.getActNode(task.getTaskDefinitionKey(), insext.getProcessId());
+		if(NodeType.TYPE_STARTEVENT.equals(node.getNodeId()) && node.getBack().intValue() != 1){
+			throw new ActFlowException("当前环节不能退回");
+		}
+		
 		if(destTask == null || destTask.length() == 0){
 			//获取上一步环节
 			destTask = actEngineService.getUpTaskKey(task);
@@ -194,6 +218,11 @@ public class ActFlowControlService {
 				throw new ActFlowException("当前流程从未处理过任务【"+destTask+"】,不能退回");
 			}
 		}
+		
+		if(destTask == null || destTask.length() == 0){
+			throw new ActFlowException("退回目的环节错误");
+		}
+		
 		Map<String,Object> actvar = new HashMap<String, Object>();
 		actvar.put("_taskoper", 2);
 		actEngineService.completeTask(task.getId(),destTask, actvar);
