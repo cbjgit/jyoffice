@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.jyoffice.actflow.model.ActInstanceExt;
 import com.jyoffice.ca.SessionUtil;
 import com.jyoffice.util.ElExpressionUtil;
 import com.jyoffice.util.SpringContextHolder;
+import com.jyoffice.util.StringUtil;
 
 @Service
 public class ActFlowControlService {
@@ -37,6 +39,7 @@ public class ActFlowControlService {
 	ActSequenceService actSequenceService;
 	@Autowired
 	InterService interService;
+	
 	
 	/**
 	 * 提交任务
@@ -99,7 +102,7 @@ public class ActFlowControlService {
 			}
 		}
 		
-		actEngineService.completeTask(taskId, varMap);
+		actEngineService.completeTask(taskId, varMap,"1");
 		
 		//更新流程实例到业务表
 		Task taskInfo = actEngineService.getTaskService().createTaskQuery().processInstanceId(instanceId).singleResult();
@@ -113,6 +116,10 @@ public class ActFlowControlService {
 	}
 	
 	private void setAssignee(Map<String, Object> varMap,ActDefNode node,String assignee){
+		
+		if(assignee == null || assignee.length() == 0 || node == null)
+			return;
+		
 		if(node.getMulti() == 1){
 			List<String> list = new ArrayList<String>();
 			if(assignee.indexOf(",") > -1){
@@ -175,15 +182,57 @@ public class ActFlowControlService {
 	 * @param taskId
 	 * @param data
 	 */
-	public List<Task> completeTask(Task task,String assignee,ActDefNode node, Map<String,Object> actvar) throws Exception{
+	public List<ActDefNode> completeTask(Task task,String assignee,ActDefNode node, Map<String,Object> actvar) throws Exception{
 		
-		if(assignee != null && assignee.length() > 0)
-			setAssignee(actvar, node, assignee);
+		setAssignee(actvar, node, assignee);
 		
-		actvar.put("_taskoper", 1);
-		actEngineService.completeTask(task.getId(), actvar);
+		actEngineService.completeTask(task.getId(), actvar, "complete");
 		
-		return actEngineService.getCurrentTask(task.getProcessInstanceId());
+		List<Execution> list = actEngineService.getCurrentTaskNode(task.getProcessInstanceId());
+		List<ActDefNode> nodelist = new ArrayList<ActDefNode>();
+		for(Execution e : list){
+			if(StringUtil.notBlank(e.getActivityId())){
+				ActDefNode newnode = getNode(e.getActivityId(), node.getProcessId());
+				nodelist.add(newnode);
+			}
+		}
+		return nodelist;
+	}
+	
+	public ActDefNode getNode(String nodeId,int processId){
+		return actNodeService.getActNode(nodeId, processId);
+	}
+	
+	
+	/**
+	 * 完成任务
+	 * 
+	 * @param frmInstanceId
+	 * @param taskKey
+	 * @param taskId
+	 * @param data
+	 */
+	public List<ActDefNode> completeTask(List<Task> taskList,String assignee,ActDefNode node, Map<String,Object> actvar) throws Exception{
+		
+		setAssignee(actvar, node, assignee);
+		
+		String instaceId = null;
+		for(Task task : taskList){
+			actEngineService.completeTask(task.getId(), actvar, "complete");
+			if(instaceId == null){
+				instaceId = task.getProcessInstanceId();
+			}
+		}
+		
+		List<Execution> list = actEngineService.getCurrentTaskNode(instaceId);
+		List<ActDefNode> nodelist = new ArrayList<ActDefNode>();
+		for(Execution e : list){
+			if(StringUtil.notBlank(e.getActivityId())){
+				ActDefNode newnode = getNode(e.getActivityId(), node.getProcessId());
+				nodelist.add(newnode);
+			}
+		}
+		return nodelist;
 	}
 	
 	/**
@@ -224,8 +273,7 @@ public class ActFlowControlService {
 		}
 		
 		Map<String,Object> actvar = new HashMap<String, Object>();
-		actvar.put("_taskoper", 2);
-		actEngineService.completeTask(task.getId(),destTask, actvar);
+		actEngineService.completeTask(task.getId(),destTask, actvar, "reject");
 		
 		return actEngineService.getCurrentTask(task.getProcessInstanceId());
 	}

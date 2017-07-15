@@ -15,6 +15,7 @@ import org.activiti.engine.TaskService;
 import org.activiti.engine.impl.identity.Authentication;
 import org.activiti.engine.repository.Deployment;
 import org.activiti.engine.repository.ProcessDefinition;
+import org.activiti.engine.runtime.Execution;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
@@ -23,6 +24,7 @@ import org.beetl.sql.core.engine.PageQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jyoffice.actflow.model.ActHiActinst;
 import com.jyoffice.util.Pager;
 
 @Service
@@ -172,6 +174,17 @@ public class ActEngineService {
 	}
 
 	/**
+	 * 获取流程当前执行节点
+	 * 
+	 * @param instanceId
+	 * @return
+	 */
+	public List<Execution> getCurrentTaskNode(String instanceId) {
+		List<Execution> tasklist = runtimeService.createExecutionQuery().processInstanceId(instanceId).list();
+		return tasklist;
+	}
+	
+	/**
 	 * 获取流程当前任务
 	 * 
 	 * @param instanceId
@@ -197,8 +210,8 @@ public class ActEngineService {
 	 * @param var
 	 * @param memo
 	 */
-	public void completeTask(String taskId, Map<String, Object> var) {
-		this.taskService.complete(taskId, var);
+	public void completeTask(String taskId, Map<String, Object> var,String oper) {
+		this.taskService.complete(taskId, var, oper);
 	}
 	
 	/**
@@ -270,7 +283,16 @@ public class ActEngineService {
 		
 	}
 
-	public void completeTask(String taskId,String destTask, Map<String, Object> var) {
+	
+	public List<ActHiActinst> getProcessExecPath(String instanceId) {
+		
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("instanceId", instanceId);
+		return sqlManager.select("ActHiActinst.list", ActHiActinst.class, param);
+		
+	}
+
+	public void completeTask(String taskId,String destTask, Map<String, Object> var,String oper) {
 
 		Task task = getTask(taskId);
 		BpmnModel bpmnModel = getBpmnModel(task.getProcessDefinitionId());
@@ -292,7 +314,7 @@ public class ActEngineService {
 		outgoingFlows.add(newSequenceFlow);
 		sourceFlownode.setOutgoingFlows(outgoingFlows);
 		
-		taskService.complete(taskId,var);
+		taskService.complete(taskId,var,oper);
 		
 		// 删除目标节点新流入
 		destFlownode.getIncomingFlows().remove(newSequenceFlow);
