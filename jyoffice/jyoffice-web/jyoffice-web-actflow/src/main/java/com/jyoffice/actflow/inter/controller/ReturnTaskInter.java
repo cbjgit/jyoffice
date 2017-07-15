@@ -19,8 +19,6 @@ import com.jyoffice.actflow.inter.response.BaseResponse;
 import com.jyoffice.actflow.inter.response.ReturnTaskResponse;
 import com.jyoffice.actflow.service.ActEngineService;
 import com.jyoffice.actflow.service.ActFlowControlService;
-import com.jyoffice.actflow.service.ActProcessService;
-import com.jyoffice.actflow.service.InterService;
 import com.jyoffice.util.StringUtil;
 
 @Controller
@@ -31,10 +29,6 @@ public class ReturnTaskInter extends BaseInter {
 	ActFlowControlService actFlowControlService;
 	@Autowired
 	ActEngineService actEngineService;
-	@Autowired
-	ActProcessService actProcessService;
-	@Autowired
-	InterService interService;
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public @ResponseBody BaseResponse completeTask(HttpServletRequest request,

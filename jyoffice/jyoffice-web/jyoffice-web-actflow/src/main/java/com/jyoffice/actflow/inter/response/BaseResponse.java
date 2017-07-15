@@ -8,6 +8,8 @@ public class BaseResponse {
 	
 	private String solution;
 
+	private Object data;
+	
 	public BaseResponse(){}
 	
 	public BaseResponse(String errormsg,String solution){
@@ -50,4 +52,13 @@ public class BaseResponse {
 	public void setSolution(String solution) {
 		this.solution = solution;
 	}
+
+	public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+	
 }

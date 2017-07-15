@@ -4,12 +4,6 @@ import java.util.List;
 
 /**
  * @author chenbj
- *
- * 当submit=true
- * 应当返回[{'taskId':'${taskId}','taskKey':'${taskId}','taskId':'${taskName}'}]
- * 
- * 当submit=false
- * 应当返回 {'multi':'${multi}','scope':'${scope}','scopeType':'${scopeType}'}
  */
 public class SubmitTaskResponse extends BaseResponse{
 
@@ -81,19 +75,9 @@ public class SubmitTaskResponse extends BaseResponse{
 	
 	public class RspTask{
 		
-		private String taskId;
-		
 		private String taskKey;
 		
 		private String taskName;
-
-		public String getTaskId() {
-			return taskId;
-		}
-
-		public void setTaskId(String taskId) {
-			this.taskId = taskId;
-		}
 
 		public String getTaskKey() {
 			return taskKey;
