@@ -19,18 +19,18 @@ public class ReturnTaskResponse extends BaseResponse{
 	
 	public class RspTask{
 		
-		private String taskId;
+		private String instanceId;
 		
 		private String taskKey;
 		
 		private String taskName;
 
-		public String getTaskId() {
-			return taskId;
+		public String getInstanceId() {
+			return instanceId;
 		}
 
-		public void setTaskId(String taskId) {
-			this.taskId = taskId;
+		public void setInstanceId(String instanceId) {
+			this.instanceId = instanceId;
 		}
 
 		public String getTaskKey() {
