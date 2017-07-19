@@ -2,9 +2,9 @@ list
 ===
 * 注释
 
-	select t.id_,t.assignee_,t.proc_inst_id_,t.name_,t.proc_def_id_,t.task_def_key_,t.create_time_,p.bus_key,
+	select t.id_,t.assignee_,t.proc_inst_id_,t.name_,t.proc_def_id_,t.task_def_key_,t.CLAIM_TIME_,t.END_TIME_, p.bus_key,
 	(select d.hitask_url from act_def_node d where d.process_id = p.process_id and d.node_id = t.task_def_key_) task_url
-	from act_ru_task t 
+	from act_hi_taskinst t 
 	inner join act_instance_ext p on p.instance_id = t.proc_inst_id_
 	where #use("condition")#
 
@@ -17,7 +17,7 @@ list$count
 condition
 ===
 
-	1 = 1  
+	t.end_time_ is not null
 	@if(!isEmpty(processId)){
 	 and t.ASSIGNEE_=#userId#
 	@}

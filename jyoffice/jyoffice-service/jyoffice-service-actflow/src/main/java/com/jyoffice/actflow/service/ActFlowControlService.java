@@ -188,15 +188,8 @@ public class ActFlowControlService {
 		
 		actEngineService.completeTask(task.getId(), actvar, "complete");
 		
-		List<Execution> list = actEngineService.getCurrentTaskNode(task.getProcessInstanceId());
-		List<ActDefNode> nodelist = new ArrayList<ActDefNode>();
-		for(Execution e : list){
-			if(StringUtil.notBlank(e.getActivityId())){
-				ActDefNode newnode = getNode(e.getActivityId(), node.getProcessId());
-				nodelist.add(newnode);
-			}
-		}
-		return nodelist;
+		return getCurrentTaskNode(task.getProcessInstanceId(), node.getProcessId());
+		
 	}
 	
 	public ActDefNode getNode(String nodeId,int processId){
@@ -224,15 +217,7 @@ public class ActFlowControlService {
 			}
 		}
 		
-		List<Execution> list = actEngineService.getCurrentTaskNode(instaceId);
-		List<ActDefNode> nodelist = new ArrayList<ActDefNode>();
-		for(Execution e : list){
-			if(StringUtil.notBlank(e.getActivityId())){
-				ActDefNode newnode = getNode(e.getActivityId(), node.getProcessId());
-				nodelist.add(newnode);
-			}
-		}
-		return nodelist;
+		return getCurrentTaskNode(instaceId, node.getProcessId());
 	}
 	
 	/**
@@ -243,9 +228,10 @@ public class ActFlowControlService {
 	 * @param taskId
 	 * @param data
 	 */
-	public List<Task> jumpCompleteTask(Task task,String destTask) throws ActFlowException{
+	public List<ActDefNode> jumpCompleteTask(Task task,String destTask) throws ActFlowException{
 		
 		ActInstanceExt insext = interService.getByInstanceId(task.getProcessInstanceId());
+		
 		ActDefNode node = actNodeService.getActNode(task.getTaskDefinitionKey(), insext.getProcessId());
 		if(NodeType.TYPE_STARTEVENT.equals(node.getNodeId()) && node.getBack().intValue() != 1){
 			throw new ActFlowException("当前环节不能退回");
@@ -275,9 +261,32 @@ public class ActFlowControlService {
 		Map<String,Object> actvar = new HashMap<String, Object>();
 		actEngineService.completeTask(task.getId(),destTask, actvar, "reject");
 		
-		return actEngineService.getCurrentTask(task.getProcessInstanceId());
+		return getCurrentTaskNode(insext.getInstanceId(), insext.getProcessId());
+		
 	}
 	
+	public Map<String,List<ActDefNode>> jumpCompleteTask(List<Task> taskList,String destTask) throws ActFlowException{
+		
+		Map<String,List<ActDefNode>> map = new HashMap<String, List<ActDefNode>>();
+		for(Task task : taskList){
+			map.put(task.getProcessInstanceId(), jumpCompleteTask(task, destTask));
+		}
+		
+		return map;
+	}
+	
+	private List<ActDefNode> getCurrentTaskNode(String instanceId,int processId){
+		List<Execution> list = actEngineService.getCurrentTaskNode(instanceId);
+		List<ActDefNode> nodelist = new ArrayList<ActDefNode>();
+		for(Execution e : list){
+			if(StringUtil.notBlank(e.getActivityId())){
+				ActDefNode newnode = getNode(e.getActivityId(), processId);
+				nodelist.add(newnode);
+			}
+		}
+		return nodelist;
+	}
+
 	/**
 	 * 获取下一个环节
 	 * 
