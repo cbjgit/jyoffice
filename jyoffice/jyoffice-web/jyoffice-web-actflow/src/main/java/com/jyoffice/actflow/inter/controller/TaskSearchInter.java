@@ -26,12 +26,26 @@ public class TaskSearchInter extends BaseInter {
 	ActEngineService actEngineService;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+	/**
+	 * @param request
+	 * @param userId
+	 * @param processKey 单位秒数
+	 * @param periodStart 单位秒数
+	 * @param periodend
+	 * @return
+	 */
 	@RequestMapping(value = "/run/{userId}/{processKey}/{periodStart}/{periodend}", method = RequestMethod.GET)
 	public @ResponseBody BaseResponse runtask(HttpServletRequest request, @PathVariable String userId,
 			@PathVariable String processKey, @PathVariable long periodStart, @PathVariable long periodend) {
 
 		try {
 			processKey = "-".equals(processKey) ? "" : processKey;
+			if(periodStart > 0 && String.valueOf(periodStart).length() != 11){
+				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
+			}
+			if(periodend > 0 && String.valueOf(periodend).length() != 11){
+				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
+			}
 			List<Map> taskList = actEngineService.getTaskList(userId, processKey, periodStart,
 					periodend);
 			List<TaskSearchResponse.RspTask> responseList = new ArrayList<TaskSearchResponse.RspTask>();
@@ -57,12 +71,26 @@ public class TaskSearchInter extends BaseInter {
 		}
 	}
 	
+	/**
+	 * @param request
+	 * @param userId
+	 * @param processKey
+	 * @param periodStart 单位秒数
+	 * @param periodend 单位秒数
+	 * @return
+	 */
 	@RequestMapping(value = "/hist/{userId}/{processKey}/{periodStart}/{periodend}", method = RequestMethod.GET)
 	public @ResponseBody BaseResponse histtask(HttpServletRequest request, @PathVariable String userId,
 			@PathVariable String processKey, @PathVariable long periodStart, @PathVariable long periodend) {
 
 		try {
 			processKey = "-".equals(processKey) ? "" : processKey;
+			if(periodStart > 0 && String.valueOf(periodStart).length() != 11){
+				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
+			}
+			if(periodend > 0 && String.valueOf(periodend).length() != 11){
+				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
+			}
 			List<Map> taskList = actEngineService.getHiTaskList(userId, processKey, periodStart,
 					periodend);
 			List<TaskSearchResponse.RspTask> responseList = new ArrayList<TaskSearchResponse.RspTask>();

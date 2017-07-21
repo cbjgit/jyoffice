@@ -3,11 +3,11 @@ package com.jyoffice.actflow.inter.controller;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.activiti.engine.task.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,22 +54,32 @@ public class TaskCommentInter extends BaseInter {
 		}
 	}
 
+	/** 
+	 * @param request
+	 * @param instanceId
+	 * @return {"success":true,"comment":[
+	 * 	{"time":"2017-07-21 13:55:26","userId":"chenbj","taskId":"170047","taskKey":"bossapproval","taskName":"主管审批","message":"不同意"},
+	 * 	{"time":"2017-07-21 13:56:17","userId":"chenbj","taskId":"170047","taskKey":"bossapproval","taskName":"主管审批","message":"请假太多了"}
+	 * ]}
+	 */
 	@RequestMapping(value = "/get/{instanceId}", method = RequestMethod.GET)
 	public @ResponseBody BaseResponse getComment(HttpServletRequest request,
 			@PathVariable String instanceId) {
 
 		try {
-			List<Comment> commentList = actEngineService.getProcessComment(instanceId);
+			List<Map> commentList = actEngineService.getProcessComment(instanceId);
 			List<TaskCommentResponse.RspComment> responseList = new ArrayList<TaskCommentResponse.RspComment>();
 			TaskCommentResponse response = new TaskCommentResponse();
 			response.setSuccess(true);
 			
-			for (Comment comment : commentList) {
+			for (Map comment : commentList) {
 				TaskCommentResponse.RspComment rspComment = response.new RspComment();
-				rspComment.setTaskId(comment.getTaskId());
-				rspComment.setUserId(comment.getUserId());
-				rspComment.setTime(sdf.format(comment.getTime()));
-				rspComment.setMessage(comment.getFullMessage());
+				rspComment.setTaskId(String.valueOf(comment.get("taskId")));
+				rspComment.setUserId(String.valueOf(comment.get("userId")));
+				rspComment.setTime(sdf.format(comment.get("time")));
+				rspComment.setMessage(String.valueOf(comment.get("message")));
+				rspComment.setTaskKey(String.valueOf(comment.get("taskDefKey")));
+				rspComment.setTaskName(String.valueOf(comment.get("name")));
 				responseList.add(rspComment);
 			}
 			response.setComment(responseList);

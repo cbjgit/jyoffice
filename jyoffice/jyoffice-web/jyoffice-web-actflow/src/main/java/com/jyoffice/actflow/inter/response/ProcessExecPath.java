@@ -1,5 +1,7 @@
 package com.jyoffice.actflow.inter.response;
 
+import java.util.List;
+
 
 public class ProcessExecPath {
 
@@ -8,7 +10,8 @@ public class ProcessExecPath {
 	private String deleteReason;
 	private String endTime;
 	private String startTime;
-
+	private List<Comment> comment;
+	
 	public String getActName() {
 		return actName;
 	}
@@ -48,5 +51,26 @@ public class ProcessExecPath {
 	public void setStartTime(String startTime) {
 		this.startTime = startTime;
 	}
+	
+	public List<Comment> getComment() {
+		return comment;
+	}
 
+	public void setComment(List<Comment> comment) {
+		this.comment = comment;
+	}
+
+
+	public class Comment{
+		
+		private String message;
+
+		public String getMessage() {
+			return message;
+		}
+
+		public void setMessage(String message) {
+			this.message = message;
+		}
+	}
 }

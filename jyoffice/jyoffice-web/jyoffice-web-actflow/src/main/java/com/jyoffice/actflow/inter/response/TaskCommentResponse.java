@@ -22,6 +22,10 @@ public class TaskCommentResponse extends BaseResponse{
 		
 		private String taskId;
 		
+		private String taskKey;
+		
+		private String taskName;
+		
 		private String message;
 
 		public String getTime() {
@@ -55,5 +59,23 @@ public class TaskCommentResponse extends BaseResponse{
 		public void setMessage(String message) {
 			this.message = message;
 		}
+
+		public String getTaskKey() {
+			return taskKey;
+		}
+
+		public void setTaskKey(String taskKey) {
+			this.taskKey = taskKey;
+		}
+
+		public String getTaskName() {
+			return taskName;
+		}
+
+		public void setTaskName(String taskName) {
+			this.taskName = taskName;
+		}
+		
+		
 	}
 }

@@ -21,16 +21,16 @@ public class TestSgin {
 	
 	public static void proess(){
 		Map<String,String> actvar = new HashMap<String, String>();
-		actvar.put("days", "1");
+		//actvar.put("days", "1");
 		
 		TreeMap<String, Object> map = new TreeMap<String, Object>();
-		map.put("taskId", "182504");
-		map.put("actvar",actvar);
-		map.put("userId","daiying4");
-		/*
-		map.put("appUserId","chenbj");
-		map.put("appUserName","陈柏贱");
-		map.put("busKey","103");
+		map.put("taskId", "170047");
+		//map.put("actvar",actvar);
+		//map.put("destTaskKey","daiying4");
+		
+		map.put("userId","chenbj");
+		map.put("comment","请假太多了");
+		/*map.put("busKey","103");
 		map.put("processKey","leval");
 		map.put("title","陈柏贱请假流程");*/
 		map.put("timestamp", Long.toString(System.currentTimeMillis() / 1000));

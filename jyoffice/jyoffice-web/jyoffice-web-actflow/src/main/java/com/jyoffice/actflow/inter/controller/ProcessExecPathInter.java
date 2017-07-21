@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.activiti.engine.task.Comment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,14 @@ public class ProcessExecPathInter extends BaseInter {
 	@Autowired
 	ActEngineService actEngineService;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	/**
+	 * @param request
+	 * @param instanceId
+	 * @return {"success":true,"data":[
+	 * 	{"actName":"start","endTime":"2017-07-15 18:46:06","startTime":"2017-07-15 18:46:06","comment":[]},
+	 * {"actName":"填写请假单","assignee":"chenbj","endTime":"2017-07-15 18:48:16","startTime":"2017-07-15 18:46:06","comment":[]},
+	 * {"actName":"主管审批","assignee":"daiying4","startTime":"2017-07-15 18:48:16","comment":[{"message":"请假太多了"},{"message":"不同意"}]}]}
+	 */
 	@RequestMapping(value = "/{instanceId}", method = RequestMethod.GET)
 	public @ResponseBody BaseResponse search(HttpServletRequest request, @PathVariable String instanceId) {
 
@@ -53,6 +62,16 @@ public class ProcessExecPathInter extends BaseInter {
 					path.setEndTime(sdf.format(act.getEndTime()));
 				}
 				path.setStartTime(sdf.format(act.getStartTime()));
+				
+				List<ProcessExecPath.Comment> returnList = new ArrayList<ProcessExecPath.Comment>();
+				List<Comment> commentList = actEngineService.getTaskComment(act.getTaskId());
+				for(Comment cmt : commentList){
+					ProcessExecPath.Comment comment = path.new Comment();
+					comment.setMessage(cmt.getFullMessage());
+					returnList.add(comment);
+				}
+			
+				path.setComment(returnList);
 				data.add(path);
 			}
 			response.setData(data);
