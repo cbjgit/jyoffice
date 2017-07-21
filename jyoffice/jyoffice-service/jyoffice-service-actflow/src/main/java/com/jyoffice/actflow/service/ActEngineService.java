@@ -129,9 +129,11 @@ public class ActEngineService {
 	 * @param instanceId
 	 * @return
 	 */
-	public List<Comment> getProcessComment(String instanceId) {
+	public List<Map> getProcessComment(String instanceId) {
 
-		return this.taskService.getProcessInstanceComments(instanceId);
+		Map<String, Object> param = new HashMap<String, Object>();
+		param.put("instanceId", instanceId);
+		return this.sqlManager.select("ActHiComment.list", Map.class, param);
 	}
 	
 	/**
@@ -241,10 +243,10 @@ public class ActEngineService {
 		param.put("userId", userId);
 		param.put("processKey", processKey);
 		if(periodStart > 0){
-			param.put("createTimeStart", new Date(periodStart));
+			param.put("createTimeStart", new Date(periodStart * 1000));
 		}
 		if(periodend > 0){
-			param.put("createTimeEnd",  new Date(periodend));
+			param.put("createTimeEnd",  new Date(periodend * 1000));
 		}
 		return sqlManager.select("ActRunTask.list", Map.class, param);
 		
@@ -256,10 +258,10 @@ public class ActEngineService {
 		param.put("userId", userId);
 		param.put("processKey", processKey);
 		if(periodStart > 0){
-			param.put("createTimeStart", new Date(periodStart));
+			param.put("timeStart", new Date(periodStart * 1000));
 		}
 		if(periodend > 0){
-			param.put("createTimeEnd",  new Date(periodend));
+			param.put("timeEnd",  new Date(periodend * 1000));
 		}
 		return sqlManager.select("ActHiTask.list", Map.class, param);
 		

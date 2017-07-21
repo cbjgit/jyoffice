@@ -21,7 +21,18 @@ condition
 	@if(!isEmpty(processId)){
 	 and t.ASSIGNEE_=#userId#
 	@}
-	
+	@if(!isEmpty(userId)){
+	 and t.ASSIGNEE_=#userId#
+	@}
+	@if(!isEmpty(timeStart)){
+	 and t.END_TIME_ >= #timeStart#
+	@}
+	@if(!isEmpty(timeEnd)){
+	 and t.END_TIME_ <= #timeEnd#
+	@}
+	@if(!isEmpty(processKey)){
+	 and p.process_key <= #processKey#
+	@}
 
 getUpTaskKey
 ===
