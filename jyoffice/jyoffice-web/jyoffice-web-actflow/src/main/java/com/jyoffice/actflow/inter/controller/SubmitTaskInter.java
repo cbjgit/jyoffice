@@ -166,7 +166,7 @@ public class SubmitTaskInter extends BaseInter {
 				
 				if(node == null){
 					//认为是最后一步
-					completeTask(spRequest, stResponse, taskList, node);
+					completeTask(spRequest, stResponse, taskList, null);
 				}else{
 					
 					if(node.getAssigneeType().intValue() == 1){
