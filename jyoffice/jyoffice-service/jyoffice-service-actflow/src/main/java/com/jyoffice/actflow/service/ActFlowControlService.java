@@ -188,6 +188,9 @@ public class ActFlowControlService {
 		
 		actEngineService.completeTask(task.getId(), actvar, "complete");
 		
+		if(node == null)
+			return new ArrayList<ActDefNode>();
+		
 		return getCurrentTaskNode(task.getProcessInstanceId(), node.getProcessId());
 		
 	}
@@ -216,6 +219,8 @@ public class ActFlowControlService {
 				instaceId = task.getProcessInstanceId();
 			}
 		}
+		if(node == null)
+			return new ArrayList<ActDefNode>();
 		
 		return getCurrentTaskNode(instaceId, node.getProcessId());
 	}
