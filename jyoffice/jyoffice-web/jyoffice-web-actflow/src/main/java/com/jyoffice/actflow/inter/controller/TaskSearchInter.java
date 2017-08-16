@@ -40,10 +40,10 @@ public class TaskSearchInter extends BaseInter {
 
 		try {
 			processKey = "-".equals(processKey) ? "" : processKey;
-			if(periodStart > 0 && String.valueOf(periodStart).length() != 11){
+			if(periodStart > 0 && String.valueOf(periodStart).length() != 10){
 				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
 			}
-			if(periodend > 0 && String.valueOf(periodend).length() != 11){
+			if(periodend > 0 && String.valueOf(periodend).length() != 10){
 				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
 			}
 			List<Map> taskList = actEngineService.getTaskList(userId, processKey, periodStart,
@@ -85,10 +85,10 @@ public class TaskSearchInter extends BaseInter {
 
 		try {
 			processKey = "-".equals(processKey) ? "" : processKey;
-			if(periodStart > 0 && String.valueOf(periodStart).length() != 11){
+			if(periodStart > 0 && String.valueOf(periodStart).length() != 10){
 				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
 			}
-			if(periodend > 0 && String.valueOf(periodend).length() != 11){
+			if(periodend > 0 && String.valueOf(periodend).length() != 10){
 				return BaseResponse.errResponse("时间格式错误", "格式精确到秒数");
 			}
 			List<Map> taskList = actEngineService.getHiTaskList(userId, processKey, periodStart,
