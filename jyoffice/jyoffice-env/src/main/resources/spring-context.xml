@@ -24,7 +24,7 @@
 	
 	<import resource="spring-activiti.xml"/>
 	
-	<!-- <import resource="spring-redissession.xml"/> -->
+	<import resource="spring-redissession.xml"/>
 	
 	<context:component-scan base-package="com.jyoffice"
 		use-default-filters="false">
